@@ -4,41 +4,34 @@ import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa";
 import { useState } from "react";
 import TodoBox from "./TodoBox";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
-
-interface ITask {
+interface IGetTodos {
     id: number;
-    title: string;
+    message: string;
     isComplete: boolean
 }
 
+
+const fetchTodos = async() => {
+  const response = await axios.get<IGetTodos[]>("https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items")
+  return response.data
+}
+
+const deleteTodos = async(id:number) => {
+  const response = await axios.delete(`https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items/${id}`)
+  return response.data
+}
 
 function TaskFeild() {
 
     const [checkBox, setCheckBox] = useState(false)
     const [openTodo , setOpenTodo] = useState(false)
-    const [message , setMessage] = useState("")
-    const [isBuildTask, setIsBuildTask] = useState(false)
-    const [task , setTask] = useState<ITask[]>([])
+    const [editSwitch, setEditSwitch] = useState(false)
+  
 
-
-    const addTask = (title:string) => {
-      const newTask = {
-        id: Date.now(),
-        title,
-        isComplete: false
-      }
-
-      setTask((prevTask) => [...prevTask,newTask])
-      setIsBuildTask(true)
-    }
-
-
-    const getIsBuildTaskChild = (data:boolean) => {
-      setIsBuildTask(data)
-    }
-
-    const clickCheckBox = () => {
+     const clickCheckBox = () => {
       setCheckBox((prev) => !prev)
     }
 
@@ -46,35 +39,64 @@ function TaskFeild() {
         setOpenTodo((prev) => !prev);
     }
 
+
+    const {data: todoData, isLoading,isError,error,refetch} = useQuery<IGetTodos[]>({
+        queryFn: fetchTodos,
+        queryKey: ['todos'],
+        
+    })
+
+    const {mutate:deleteMutate} = useMutation({
+        mutationFn: deleteTodos,
+        onSuccess: (dataDeleted) => {
+          console.log("deleted Data",dataDeleted);
+          refetch()
+        }
+    })
+
+    
+    const deleteHandle = (id:number) => {
+        deleteMutate(id)
+    }
+
+    const editHandle =() => {
+      setEditSwitch((prev) => !prev)
+    }
+
+
+    if(isError) return <div>Error Fetch Data: {error.message}</div>
+    if(isLoading) return <div>Loading ...</div>
+
   return (
     <>
         <div  className='flex flex-col space-y-4 w-3/4 mt-5 divide-y divide-primary  '>
 
-        {isBuildTask && (
-            task.map((task) => 
+            {todoData && ( todoData.map((data) => 
               (
-                <div key={task.id} className="flex justify-between items-center pb-4">
+                <div key={data.id} className="flex justify-between items-center pb-4">
                 <div className="flex items-center gap-5">
                     <span className={`w-5 h-5 flex items-center justify-center  rounded-[2px] border border-primary cursor-pointer ${checkBox ? "bg-primary" : "bg-white"}`} onClick={clickCheckBox} >
                     {checkBox ? <FaCheck color="white" /> : ""}
                     </span>
-                    <span  className={`text-xl font-bold ${checkBox ? "line-through text-gray-400" : ""}`}>{task.title}</span>
+                    <span  className={`text-xl font-bold ${checkBox ? "line-through text-gray-400" : ""}`}>{data.message}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 *:cursor-pointer">
-                    <TiPencil className="hover:text-primary" />
-                    <CiTrash className="hover:text-red-500" />
+                    <TiPencil className="hover:text-primary" onClick={editHandle} />
+                    <CiTrash onClick={() => deleteHandle(data.id)} className="hover:text-red-500" />
                 </div>
             </div>
               )
             )
-        )}
+
+            )}
+
         </div>
 
             <div onClick={openTodoHandle} className="w-12 h-12 flex justify-center items-center fixed bottom-20 right-140 text-white bg-primary rounded-full hover:bg-acccent cursor-pointer">
                 <FaPlus size={24}/>
             </div>
-            {openTodo && (
-                <TodoBox setOpenTodo={setOpenTodo} getTextFromChild={addTask} getIsBuildTaskChild={getIsBuildTaskChild}/>
+            {(openTodo || editSwitch) && (
+                <TodoBox setOpenTodo={setOpenTodo} setEditSwitch={setEditSwitch} refetchTodos={refetch} />
             )}
     </>
   )
