@@ -24,11 +24,13 @@ const deleteTodos = async(id:number) => {
   return response.data
 }
 
+
 function TaskFeild() {
 
     const [checkBox, setCheckBox] = useState(false)
     const [openTodo , setOpenTodo] = useState(false)
     const [editSwitch, setEditSwitch] = useState(false)
+    const [selectedTodoId , setSelectedTodoId] = useState<number | null>(null)
   
 
      const clickCheckBox = () => {
@@ -37,6 +39,8 @@ function TaskFeild() {
 
     const openTodoHandle = () => {
         setOpenTodo((prev) => !prev);
+        setEditSwitch(false)
+        setSelectedTodoId(null)
     }
 
 
@@ -54,14 +58,17 @@ function TaskFeild() {
         }
     })
 
-    
+
     const deleteHandle = (id:number) => {
-        deleteMutate(id)
+      console.log(id);
+        deleteMutate(id) 
     }
 
-    const editHandle =() => {
-      setEditSwitch((prev) => !prev)
-    }
+    const editHandle =(id:number) => {
+      setEditSwitch(true)
+      setSelectedTodoId(id)
+      setOpenTodo(true)
+    } 
 
 
     if(isError) return <div>Error Fetch Data: {error.message}</div>
@@ -81,7 +88,7 @@ function TaskFeild() {
                     <span  className={`text-xl font-bold ${checkBox ? "line-through text-gray-400" : ""}`}>{data.message}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400 *:cursor-pointer">
-                    <TiPencil className="hover:text-primary" onClick={editHandle} />
+                    <TiPencil className="hover:text-primary" onClick={() => editHandle(data.id)} />
                     <CiTrash onClick={() => deleteHandle(data.id)} className="hover:text-red-500" />
                 </div>
             </div>
@@ -96,7 +103,7 @@ function TaskFeild() {
                 <FaPlus size={24}/>
             </div>
             {(openTodo || editSwitch) && (
-                <TodoBox setOpenTodo={setOpenTodo} setEditSwitch={setEditSwitch} refetchTodos={refetch} />
+                <TodoBox setOpenTodo={setOpenTodo} setEditSwitch={setEditSwitch} refetchTodos={refetch} selectedTodoId={selectedTodoId} />
             )}
     </>
   )
