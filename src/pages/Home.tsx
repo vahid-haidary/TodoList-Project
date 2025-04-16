@@ -1,8 +1,13 @@
-import React from 'react'
+import { useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import TaskFeild from '../components/TaskFeild'
 
 function Home() {
+
+  const [searchTerm, setSearchTerm] = useState("")
+
+
+
   return (
     <>
     <section className='w-full h-screen' >
@@ -10,7 +15,7 @@ function Home() {
             <h1 className='text-center text-2xl font-bold'>TODO LIST</h1>
             <div className='flex justify-between mt-5'>
               <div className='flex items-center justify-between w-3/4 border px-4 border-primary outline-none rounded-md *:focus-visible:outline-none'>
-                <input className='w-full'  type="search"  placeholder='Search note...' />
+                <input className='w-full'  type="search" onChange={(e) => setSearchTerm(e.target.value)}  placeholder='Search note...' />
                 <FiSearch size={24} className='cursor-pointer text-primary'/>
               </div>
               <select className='bg-primary w-28 px-2 py-2 text-white rounded-md focus-visible: *:bg-white *:text-primary *:hover:text-acccent ' name="completing" id="completing">
@@ -19,7 +24,7 @@ function Home() {
                 <option value="Incomplete">Incomplete</option>
               </select>
             </div>
-            <TaskFeild/>
+            <TaskFeild  searchTerm={searchTerm} />
         </div>
     </section>
 

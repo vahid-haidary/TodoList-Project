@@ -6,11 +6,15 @@ interface ProtectedTokenProps {
 }
 
 const ProtectedToken: React.FC<ProtectedTokenProps> = ({ children }) => {
+    
     const token = localStorage.getItem("token");
 
-    if (!token) {
+    const tokenId = token ? JSON.parse(token).tokenId : null
+
+    if (!tokenId) {
         return <Navigate to="/login" replace />;
     }
+
 
     return children;
 };
