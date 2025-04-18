@@ -152,7 +152,7 @@ function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
                 <FaPlus size={24}/>
             </div>
             {(openTodo || editSwitch) && (
-                <TodoBox setOpenTodo={setOpenTodo} setEditSwitch={setEditSwitch} refetchTodos={refetch} selectedTodoId={selectedTodoId} />
+                <TodoBox setOpenTodo={setOpenTodo} setEditSwitch={setEditSwitch} refetchTodos={refetch} selectedTodoId={selectedTodoId ? selectedTodoId.toString() : null} />
             )}
     </>
   )

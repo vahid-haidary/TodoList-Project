@@ -14,7 +14,7 @@ interface ITodoBoxProps {
 }
 
 interface ITodos {
-    id:string;
+    id:string | null;
     message: string | null;
     isComplete: boolean;
 }
@@ -109,6 +109,7 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
 
         getTodo(selectedTodoId)
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     },[selectedTodoId])
 
   return (
