@@ -41,10 +41,10 @@ const fetchTodo = async(selectedTodoId:string) => {
 function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBoxProps) {
   
   const schema = zod.object({
-    boxInputValue: zod.string()
+    boxInputValue: zod.string().nonempty('Please fill the Input')
   })
 
-  const {register,handleSubmit,reset,setValue,setFocus} = useForm({
+  const {register,handleSubmit,reset,setValue,setFocus,formState:{errors}  } = useForm({
     resolver: zodResolver(schema)
   })
 
@@ -120,6 +120,9 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
          placeholder='Input your note ...'
          {...register("boxInputValue")}
          />
+         {errors.boxInputValue && (
+          <div className='text-red-600 mt-3' >{errors.boxInputValue.message}</div>
+         )}
         </div>
         <div className='flex justify-between pt-20 *:px-5 *:py-1 *:cursor-pointer'>
             <button className='border border-primary text-primary rounded-md font-semibold' type='button' onClick={cancelHandle}>Cancel</button>
