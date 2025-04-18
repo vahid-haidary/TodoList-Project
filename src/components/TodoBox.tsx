@@ -44,7 +44,7 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
     boxInputValue: zod.string()
   })
 
-  const {register,handleSubmit,reset,setValue} = useForm({
+  const {register,handleSubmit,reset,setValue,setFocus} = useForm({
     resolver: zodResolver(schema)
   })
 
@@ -86,8 +86,7 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
     const submitHandle = (data:FormData) => {
       console.log(data);
       if(data.boxInputValue === ""){
-        setOpenTodo(false)
-        setEditSwitch(false)
+        setFocus('boxInputValue')
         return
       }
       const newTodo:ITodos = {
@@ -104,6 +103,8 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
     }
 
     useEffect(() => {
+      setFocus('boxInputValue')
+
       if(selectedTodoId){
 
         getTodo(selectedTodoId)
@@ -111,7 +112,7 @@ function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBo
     },[selectedTodoId])
 
   return (
-    <form onSubmit={handleSubmit(submitHandle)} className='absolute top-48 left-0 right-0 w-[30%] mx-auto bg-white shadow-2xl p-3 border border-gray-300 rounded-md'>
+    <form onSubmit={handleSubmit(submitHandle)} className='absolute top-48 left-0 right-0 w-[30%] max-xs:w-[80%] mx-auto bg-white shadow-2xl p-3 border border-gray-300 rounded-md'>
         <div className='flex flex-col justify-center items-center '>
         <h1 className='font-semibold text-center mb-5 text-xl' >New Note</h1>
         <input type="text" className='w-[95%] py-1 pl-3 rounded-md border border-primary outline-none'

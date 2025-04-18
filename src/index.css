@@ -3,4 +3,6 @@
 @theme{
     --color-primary: #6C63FF;
     --color-acccent: #534CC2;
+
+    --breakpoint-xs: 30rem;
 }

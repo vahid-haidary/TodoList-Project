@@ -2,11 +2,10 @@ import { TiPencil } from "react-icons/ti";
 import { CiTrash } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import TodoBox from "./TodoBox";
 import {  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { data } from "react-router-dom";
 
 interface IGetTodos {
     id: number;
@@ -16,6 +15,10 @@ interface IGetTodos {
 
 interface ISearchProps {
   searchTerm: string
+}
+
+interface IFilter {
+  todoFilter: string
 }
 
 
@@ -35,7 +38,7 @@ const updateTodoComplete = async(updateTodo:IGetTodos) => {
 }
 
 
-function TaskFeild({searchTerm}:ISearchProps) {
+function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
 
     const [openTodo , setOpenTodo] = useState(false)
     const [editSwitch, setEditSwitch] = useState(false)
@@ -52,15 +55,11 @@ function TaskFeild({searchTerm}:ISearchProps) {
         queryFn: fetchTodos,
         queryKey: ['todos'],
         
-        
     })
-
-      console.log(todoData);
 
     const {mutate:deleteMutate} = useMutation({
         mutationFn: deleteTodos,
-        onSuccess: (dataDeleted) => {
-          console.log("deleted Data",dataDeleted);
+        onSuccess: () => {
           refetch()
         } 
     })
@@ -69,10 +68,6 @@ function TaskFeild({searchTerm}:ISearchProps) {
 
     const {mutate:updateComplete} = useMutation({
       mutationFn: updateTodoComplete,
-      onSuccess: () => {
-
-      }
-
     })
 
     const clickCheckBox = (todo:IGetTodos) => {
@@ -91,9 +86,26 @@ function TaskFeild({searchTerm}:ISearchProps) {
       )
     }
 
-    const filterTodos = todoData?.filter((todo) => 
+    //serach Term
+    const searchFilterTodos = todoData?.filter((todo) => 
       todo.message.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+
     )
+    
+    //Filter Term
+    const filterTodos = searchFilterTodos?.filter((todo) => {
+      
+      if(todoFilter === "Complete"){
+        return todo.isComplete
+      }else if(todoFilter === 'Incomplete'){
+        return !todo.isComplete
+      }else{
+        return true
+      }
+
+    }
+    )
+
 
     const deleteHandle = (id:number) => {
         deleteMutate(id) 
@@ -105,24 +117,26 @@ function TaskFeild({searchTerm}:ISearchProps) {
       setOpenTodo(true)
     } 
 
+     
+
 
     if(isError) return <div>Error Fetch Data: {error.message}</div>
     if(isLoading) return <div>Loading ...</div>
 
   return (
     <>
-        <div  className='flex flex-col space-y-4 w-3/4 mt-5 divide-y divide-primary select-none '>
+        <div  className='flex flex-col space-y-4 w-3/4 mt-6 divide-y divide-primary select-none max-xs:w-full max-xs:pt-3 '>
 
             {filterTodos && ( filterTodos.map((data) => 
               (
                 <div key={data.id} className="flex justify-between items-center pb-4">
                 <div className="flex items-center gap-5">
-                    <span className={`w-5 h-5 flex items-center justify-center  rounded-[2px] border border-primary cursor-pointer ${data.isComplete ? "bg-primary" : "bg-white"}`} onClick={() => clickCheckBox(data)} >
+                    <span className={`min-w-5 min-h-5 flex items-center justify-center  rounded-[2px] border border-primary cursor-pointer ${data.isComplete ? "bg-primary" : "bg-white"}`} onClick={() => clickCheckBox(data)} >
                     {data.isComplete ? <FaCheck color="white" /> : ""}
                     </span>
-                    <span  className={`text-xl font-bold ${data.isComplete ? "line-through text-gray-400" : ""}`}>{data.message}</span>
+                    <p className={`text-xl max-xs:text-lg font-bold break-all ${data.isComplete ? "line-through text-gray-400" : ""}`}>{data.message}</p>
                 </div>
-                <div className="flex items-center gap-3 text-gray-400 *:cursor-pointer">
+                <div className="flex items-center gap-3 text-gray-400 pl-5 *:cursor-pointer">
                     <TiPencil className="hover:text-primary" onClick={() => editHandle(data.id)} />
                     <CiTrash onClick={() => deleteHandle(data.id)} className="hover:text-red-500" />
                 </div>
@@ -134,7 +148,7 @@ function TaskFeild({searchTerm}:ISearchProps) {
 
         </div>
 
-            <div onClick={openTodoHandle} className="w-12 h-12 flex justify-center items-center fixed bottom-20 right-140 text-white bg-primary rounded-full hover:bg-acccent cursor-pointer">
+            <div onClick={openTodoHandle} className="w-12 h-12 flex justify-center items-center fixed bottom-20 max-xs:right-5 right-140 text-white bg-primary rounded-full hover:bg-acccent cursor-pointer">
                 <FaPlus size={24}/>
             </div>
             {(openTodo || editSwitch) && (
