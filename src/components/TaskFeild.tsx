@@ -2,7 +2,7 @@ import { TiPencil } from "react-icons/ti";
 import { CiTrash } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import TodoBox from "./TodoBox";
 import {  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -121,7 +121,7 @@ function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
 
 
     if(isError) return <div>Error Fetch Data: {error.message}</div>
-    if(isLoading) return <div>Loading ...</div>
+    if(isLoading) return <div className="w-full text-center mt-20"><span className="w-[60px] loading loading-spinner text-acccent "></span></div>
 
   return (
     <>

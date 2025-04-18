@@ -30,7 +30,7 @@ function Login() {
 
 
 const onFormSubmit:SubmitHandler<IForm> = async(data) => {
-  await new Promise<void>((resolve) => setTimeout(resolve,1000))
+  await new Promise<void>((resolve) => setTimeout(resolve,2000))
 
   const uuidData = {
     ...data,
@@ -76,7 +76,7 @@ const onFormSubmit:SubmitHandler<IForm> = async(data) => {
                 {errors.password && (
                   <div className="!text-red-600 !bg-white !py-0 ">{errors.password.message}</div>
                 )}
-                <button type='submit' className='!bg-primary !text-white'>{isSubmitting ? "Loading...":"Register"}</button>
+                <button type='submit' className='!bg-primary !text-white'>{isSubmitting ? <span className="loading loading-spinner loading-xl text-white"></span>:"Register"}</button>
 
             </form>
           </div>
