@@ -1,41 +1,10 @@
-import React, { useEffect } from 'react'
-import axios from "axios"
+import { useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod'
-
-interface ITodoBoxProps {
-    setOpenTodo: React.Dispatch<React.SetStateAction<boolean>>,
-    refetchTodos: () => void,
-    setEditSwitch: React.Dispatch<React.SetStateAction<boolean>>,
-    selectedTodoId: string | null,
-    
-}
-
-interface ITodos {
-    id:string | null;
-    message: string | null;
-    isComplete: boolean;
-}
-
-
-const postTodos = async(newTodo:ITodos) => {
-  const response = await axios.post("https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items",newTodo) 
-  console.log(response);
-  return response
-
-}
-
-const putTodos = async (updatedTodo:ITodos) => {
-  const response = await axios.put(`https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items/${updatedTodo.id}`,updatedTodo)
-  return response.data
-}
-
-const fetchTodo = async(selectedTodoId:string) => {
-  const response = await axios.get<ITodos>(`https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items/${selectedTodoId}`)
-  return response
-}
+import {ITodoBoxProps,ITodos} from '../types/type'
+import {postTodos,putTodos,fetchTodo} from '../api/axiosApi'
 
 
 function TodoBox({setOpenTodo,refetchTodos,setEditSwitch,selectedTodoId}:ITodoBoxProps) {

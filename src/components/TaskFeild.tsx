@@ -3,39 +3,12 @@ import { CiTrash } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa";
 import { useState } from "react";
-import axios from "axios";
 import TodoBox from "./TodoBox";
 import {  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-interface IGetTodos {
-    id: number;
-    message: string;
-    isComplete: boolean
-}
-
-interface ISearchProps {
-  searchTerm: string
-}
-
-interface IFilter {
-  todoFilter: string
-}
+import {IGetTodos,ISearchProps,IFilter} from '../types/type'
+import {fetchTodos,deleteTodos,updateTodoComplete} from '../api/axiosApi'
 
 
-const fetchTodos = async() => {
-  const response = await axios.get<IGetTodos[]>("https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items")
-  return response.data
-}
-
-const deleteTodos = async(id:number) => {
-  const response = await axios.delete(`https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items/${id}`)
-  return response.data
-}
-
-const updateTodoComplete = async(updateTodo:IGetTodos) => {
-  const response = await axios.put(`https://67fcb3821f8b41c816872f0f.mockapi.io/Todo-Items/${updateTodo.id}`,updateTodo)
-  return response.data
-}
 
 
 function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
