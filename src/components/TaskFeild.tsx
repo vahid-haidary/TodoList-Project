@@ -40,6 +40,9 @@ const updateTodoComplete = async(updateTodo:IGetTodos) => {
 
 function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
 
+      const queryClient = useQueryClient()
+
+
     const [openTodo , setOpenTodo] = useState(false)
     const [editSwitch, setEditSwitch] = useState(false)
     const [selectedTodoId , setSelectedTodoId] = useState<number | null>(null)
@@ -59,12 +62,13 @@ function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
 
     const {mutate:deleteMutate} = useMutation({
         mutationFn: deleteTodos,
-        onSuccess: () => {
-          refetch()
+        onSuccess: (_,deletedId) => {
+          queryClient.setQueryData<IGetTodos[]>(['todos'], (oldData) => {
+            if(!oldData) return [];
+            return oldData.filter((todo) => todo.id !== deletedId)
+          })
         } 
     })
-
-    const queryClient = useQueryClient()
 
     const {mutate:updateComplete} = useMutation({
       mutationFn: updateTodoComplete,
@@ -82,8 +86,7 @@ function TaskFeild({searchTerm,todoFilter}:ISearchProps & IFilter) {
       );
      
 
-      queryClient.setQueryData(['todos'],newData
-      )
+      queryClient.setQueryData(['todos'],newData)
     }
 
     //serach Term
